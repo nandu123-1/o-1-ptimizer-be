@@ -1,0 +1,60 @@
+---
+analyze_code_complexity:
+  description: >
+    Analyze the user's C++ code.
+    Input code:
+    {cpp_code}
+
+    Return only structured findings for complexity and bottlenecks.
+  expected_output: >
+    JSON-compatible object matching ComplexityAnalysisOutput with fields:
+    original_time_complexity, original_space_complexity, bottlenecks, rationale.
+  agent: c_code_complexity_analyzer
+
+research_optimal_algorithms:
+  description: >
+    Use the complexity analysis context to propose the strongest algorithmic rewrite.
+    Focus on asymptotic improvement and realistic implementation details for C++.
+  expected_output: >
+    JSON-compatible object matching AlgorithmResearchOutput with fields:
+    recommended_approach, data_structures, expected_time_complexity,
+    expected_space_complexity, implementation_plan.
+  agent: algorithm_research_specialist
+  context:
+    - analyze_code_complexity
+
+optimize_code_implementation:
+  description: >
+    Rewrite the original C++ code into optimized code.
+
+    You MUST use cpp_compiler_tool to compile the code.
+    If compilation fails, fix the code and retry until it compiles or until
+    {max_self_correction_attempts} attempts are exhausted.
+
+    Use stdin payload when needed:
+    {stdin_data}
+  expected_output: >
+    JSON-compatible object matching CodeOptimizationOutput with fields:
+    optimized_code, optimization_notes, correctness_strategy, complexity,
+    compiler_attempts.
+  agent: c_code_optimizer
+  context:
+    - analyze_code_complexity
+    - research_optimal_algorithms
+
+generate_algorithm_visualization:
+  description: >
+    Produce final frontend payload for Recharts.
+
+    Use complexity_curve_tool with original and optimized complexity to generate points.
+    Return only strict JSON payload without markdown, prose, or code fences.
+  expected_output: >
+    JSON-compatible object matching SwarmOptimizationResult with fields:
+    status, problem_summary, original_code, optimized_code, complexity,
+    algorithm_choices, optimization_notes, correctness_notes,
+    compiler_attempts, visualization.
+  agent: algorithm_visualization_expert
+  context:
+    - analyze_code_complexity
+    - research_optimal_algorithms
+    - optimize_code_implementation

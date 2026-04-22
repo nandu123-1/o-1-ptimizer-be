@@ -1,0 +1,31 @@
+[project]
+name = "dsa_tutor_code_optimizer"
+version = "0.1.0"
+description = "dsa_tutor_code_optimizer using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[file-processing,litellm,tools]==1.13.0",
+    "fastapi>=0.115.0,<1.0.0",
+    "pydantic",
+    "uvicorn>=0.30.0,<1.0.0",
+]
+
+[project.scripts]
+dsa_tutor_code_optimizer = "dsa_tutor_code_optimizer.main:run"
+run_crew = "dsa_tutor_code_optimizer.main:run"
+train = "dsa_tutor_code_optimizer.main:train"
+replay = "dsa_tutor_code_optimizer.main:replay"
+test = "dsa_tutor_code_optimizer.main:test"
+run_with_trigger = "dsa_tutor_code_optimizer.main:run_with_trigger"
+run_api = "dsa_tutor_code_optimizer.api:run_dev_server"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"
+
+[tool.uv]
+override-dependencies = ["litellm<=1.82.6"]
