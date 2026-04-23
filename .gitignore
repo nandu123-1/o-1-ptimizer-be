@@ -31,6 +31,10 @@ out/
 frontend/tsconfig.tsbuildinfo
 frontend/public/monaco-vs/
 
+# Generated artifacts
+*.pptx
+*.pdf
+
 # OS / editor
 .DS_Store
 Thumbs.db
