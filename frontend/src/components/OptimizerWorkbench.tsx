@@ -235,8 +235,34 @@ export default function OptimizerWorkbench() {
       });
 
       const rawBody = await optimizeResponse.text();
-      const parsedBody: unknown =
-        rawBody.length > 0 ? JSON.parse(rawBody) : null;
+      const contentType = optimizeResponse.headers.get("content-type") ?? "";
+      const looksLikeJson =
+        contentType.toLowerCase().includes("application/json") ||
+        rawBody.trimStart().startsWith("{") ||
+        rawBody.trimStart().startsWith("[");
+
+      if (!looksLikeJson) {
+        const preview = rawBody.slice(0, 200).replace(/\s+/g, " ").trim();
+        setResponse(null);
+        setErrorMessage(
+          `Backend returned non-JSON (HTTP ${optimizeResponse.status}) from ${OPTIMIZE_ENDPOINT}. First 200 chars: "${preview}"`,
+        );
+        return;
+      }
+
+      let parsedBody: unknown = null;
+      try {
+        parsedBody = rawBody.length > 0 ? JSON.parse(rawBody) : null;
+      } catch (parseError) {
+        const preview = rawBody.slice(0, 200).replace(/\s+/g, " ").trim();
+        setResponse(null);
+        setErrorMessage(
+          `Malformed JSON (HTTP ${optimizeResponse.status}): ${
+            parseError instanceof Error ? parseError.message : "parse error"
+          }. First 200 chars: "${preview}"`,
+        );
+        return;
+      }
 
       if (!optimizeResponse.ok) {
         setResponse(null);
