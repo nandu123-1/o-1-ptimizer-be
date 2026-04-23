@@ -166,6 +166,18 @@ const CODE_FILE_EXTENSIONS = [
   ".hh",
   ".txt",
 ];
+
+const PUBLIC_BACKEND_BASE_URL = (
+  process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL ?? ""
+).replace(/\/+$/, "");
+
+const OPTIMIZE_ENDPOINT = PUBLIC_BACKEND_BASE_URL
+  ? `${PUBLIC_BACKEND_BASE_URL}/v1/optimize-code`
+  : "/api/optimize";
+
+const EXTRACT_IMAGE_ENDPOINT = PUBLIC_BACKEND_BASE_URL
+  ? `${PUBLIC_BACKEND_BASE_URL}/v1/extract-cpp-from-image`
+  : "/api/extract-cpp-from-image";
 const MAX_CODE_FILE_BYTES = 200_000;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
@@ -214,7 +226,7 @@ export default function OptimizerWorkbench() {
     };
 
     try {
-      const optimizeResponse = await fetch("/api/optimize", {
+      const optimizeResponse = await fetch(OPTIMIZE_ENDPOINT, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -306,7 +318,7 @@ export default function OptimizerWorkbench() {
       try {
         const form = new FormData();
         form.append("file", file, file.name || "upload");
-        const res = await fetch("/api/extract-cpp-from-image", {
+        const res = await fetch(EXTRACT_IMAGE_ENDPOINT, {
           method: "POST",
           body: form,
         });
